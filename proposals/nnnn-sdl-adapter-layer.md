@@ -44,7 +44,27 @@ Big picture of SDL Adapter :
 ![SDL Adapter](../assets/proposals/nnnn-sdl-adapter-layer/sdl_adapter.png) 
 
 
-### Interface of SDL business logic
+### Scope or responcubilities and interfaces of SDL business logic
+
+**SDL business logic** component contains whole functionality of SDL :  
+
+ - SDL protocol
+ - Application management
+ - Handling and processing RPCs
+ - Resumption functionality
+ - Policy functionality
+ - State management
+
+Folowing interfaces **SDL business logic** component should provide to SDL adapter : 
+ 
+#### HMIMessageHandler
+
+Interface used by **HMI Massage handler** to notify SDL about new HMI message. 
+
+###### Methods : 
+
+- `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Brocker when message from HMI received 
+- `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Brocker if sending message to HMI failed 
 
 ### Scope of responcibilities or SDL adapter
 

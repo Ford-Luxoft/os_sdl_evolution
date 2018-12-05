@@ -6,15 +6,14 @@ node "SDL Adapter" {
   interface "TCP Transport Adapter" as TCP 
   interface "BT Transport Adapter" as BT 
   interface "USB Transport Adapter" as USB 
-  [Transport Manager] -- TCP
-  [Transport Manager] -- BT
-  [Transport Manager] -- USB
+
   [SDLInit]
   [HMI Message Brocker]
 } 
 
 
 node "SDL BusinessLogic" {
+  [Transport Manager]
   [Application Manager]
   [RPC Service]
   [Media Manager]
@@ -22,7 +21,12 @@ node "SDL BusinessLogic" {
   [Protocol Handler]
 } 
 
-[Transport Manager] -up- [Protocol Handler]
+[Utils]
+
+[Transport Manager] -- TCP
+[Transport Manager] -- BT
+[Transport Manager] -- USB
+
 [HMI Message Brocker] -- [RPC Service]
 [SDLInit] -up- [Protocol Handler]
 [SDLInit] -up- [Application Manager]
