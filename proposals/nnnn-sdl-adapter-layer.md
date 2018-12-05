@@ -1,4 +1,4 @@
-# Specify OEM SDL Adapter Layer
+# Specify SDL Adapter Layer
 
 * Proposal: [SDL-NNNN](nnnn-oem-adapter-layer.md)
 * Author: [Alexander Kutsan](https://github.com/LuxoftAKutsan)
@@ -29,7 +29,11 @@ and can be safety replaced by OEM implementation.
 
 ## Proposed solution
 
+Extract platform specific parts, and parts that may be replaces for integration of SDL to OEM inrastructure to separate component - **SDL adapter**. 
+
 ### Arhitecture splitting of sdl parts :
+
+
 
 ### Interface of SDL business logic
 
