@@ -31,8 +31,17 @@ and can be safety replaced by OEM implementation.
 
 Extract platform specific parts, and parts that may be replaces for integration of SDL to OEM inrastructure to separate component - **SDL adapter**. 
 
-### Arhitecture splitting of sdl parts :
+### Architecture splitting of sdl parts :
 
+Extract folowing components to SDL Adapter :
+
+- Transport Adapters 
+- HMI MessageBrocker
+- SDL initialization
+
+Big picture of SDL Adapter : 
+
+![SDL Adapter](../assets/proposals/nnnn-sdl-adapter-layer/sdl_adapter.png) 
 
 
 ### Interface of SDL business logic
