@@ -57,9 +57,9 @@ Big picture of SDL Adapter :
 
 Folowing interfaces **SDL business logic** component should provide to SDL adapter : 
  
-#### HMIMessageHandler
+#### HMIMessageObserver
 
-Interface used by **HMI Massage handler** to notify SDL about new HMI message. 
+Interface used by **HMI Massage observer** to notify SDL about new HMI message. 
 
 ###### Methods : 
 
@@ -69,6 +69,17 @@ Interface used by **HMI Massage handler** to notify SDL about new HMI message.
 ### Scope of responsibilities or SDL adapter
 
 ### Open source SDL adapter
+
+#### HMIMessageSender 
+
+Components that is responcible for sending message to HMI. 
+
+
+- `void SendMessageToHMI (SPtr<HMIMessage>)` : Send message to HMI (Put in queue for sending)
+- `size_t GetNumberMessagesInQueue ()` : Return amount of messages that queed for sending to HMI, but not sent yet.
+- `void RemoveMessagesByIds (vector<id>)` : Removes certain messages from queue for sending to HMI
+
+The components works in async mode. Calling `SendMessageToHMI` actually puts message in the queue for sending to HMI. 
 
 
 ### Using modern CMake approach
