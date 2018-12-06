@@ -70,6 +70,18 @@ Interface used by **HMI Massage observer** to notify SDL about new HMI message.
 
 ### Open source SDL adapter
 
+#### LifeCycle 
+
+Component is responcible for SDL startup, it initialize all components of SDL, and inject dependencies. 
+
+Components should contain main.cc with `main` function that will be called when application starts.
+
+Functions that sdl_adapter should provide in LifeCycle component : 
+
+ - `main` - function that will be called on application staratup 
+ - `StartComponents` - Function initialize all components and startup SDL
+ - `StopComponents` - Function stop and delete all SDL components. 
+ 
 #### HMIMessageSender 
 
 Components that is responcible for sending message to HMI. 
@@ -118,6 +130,9 @@ SDL CMake files should explicitly specify include directories, link libraries, c
  - `/CMakeLists.txt`: contains common build configs for all projects, include directories with some builds utils and helpers;
  - `/src/`: contains all sources of the project;
  - `/src/components`: contains sources of SDL Core components;
+ - `/src/components/sdl_adapter`: contains sources of SDL Adapter components;
+ - `/src/components/sdl_logic`: contains sources of SDL business logic components;
+ - `/src/components/utils`: contains sources of Utils componnts that used both in SDL Adapter and SDL business logic 
  - `/src/3rd_party`: contains sources of 3rd party components;
  - `/src/appMain`: contains sources of SDL Core main executable and config files for runtime;
  - `/src/docs/`: contains doxygen template for Software Detailed Design (SDD) document generation;
