@@ -7,11 +7,11 @@
 
 ## Introduction
 
-This proposal offers using CMake build system for compilation ATF project instead of qmake tool. 
+This proposal offers using CMake build system for compilation Automated Test Framework (ATF) project instead of qmake tool. 
 
 ## Motivation
 
-Extending sdl_atf with new dependencies and new code requires seamless integration with build system.  
+Extending of ATF with new dependencies and new code requires seamless integration with build system.  
 Existing qmake and make systems are not expandable and adding any supplementary components is rather complicated.  
 CMake is able to provide clear dependency structure, seamless integration with 3rd party libraries, and easy expandable project structure.
 
@@ -20,15 +20,15 @@ CMake is able to provide clear dependency structure, seamless integration with 3
 This proposal is about to create CMakeLists.txt files with all required dependency descriptions.
 
 #### Pre build cmake responsibilities:
- - Check if Qt is available
- - Check if lua lib is available
- - Fetch [bson_c_lib](https://github.com/smartdevicelink/bson_c_lib) with lua support and append it to sdl_atf compilation
+ - Check if Qt framework is available on the target workstation.
+ - Check if lua library is available on the target workstation.
+ - Fetch [bson_c_lib](https://github.com/smartdevicelink/bson_c_lib) with lua support and append it to sdl_atf compilation.
 
 #### Build cmake responsibilities:
 
-  - Provide `all` target which will create atf binary
+  - Provide `all` target which will create ATF binary.
 
-  - Provide `install` target that will install required files for running ATF to `CMAKE_INSTALL_PREFIX` variable
+  - Provide `install` target that will install required files for running ATF to `CMAKE_INSTALL_PREFIX` variable.
 
 ## Potential downsides
 
