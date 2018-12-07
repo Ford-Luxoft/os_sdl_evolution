@@ -81,11 +81,10 @@ Functions that sdl_adapter should provide in LifeCycle component :
  - `main` - function that will be called on application staratup 
  - `StartComponents` - Function initialize all components and startup SDL
  - `StopComponents` - Function stop and delete all SDL components. 
- 
+  
 #### HMIMessageSender 
 
 Components that is responcible for sending message to HMI. 
-
 
 - `void SendMessageToHMI (SPtr<HMIMessage>)` : Send message to HMI (Put in queue for sending)
 - `size_t GetNumberMessagesInQueue ()` : Return amount of messages that queed for sending to HMI, but not sent yet.
@@ -94,6 +93,31 @@ Components that is responcible for sending message to HMI.
 The components works in async mode. Calling `SendMessageToHMI` actually puts message in the queue for sending to HMI. 
 
 
+
+#### Transport Layer :
+
+Transport layer is the most significant part of **SDL adapter**. 
+For entire transport type should be implemented folowing list of interfaces : 
+ - TransportAdapter
+ - ServerConnectionFactory
+ - DeviceScanner
+ 
+ 
+##### TransportAdapter
+Class is responcible for sending data to device and receiving data. 
+
+ - `void Init()` : initialize Transport Adapter functionality 
+ - `void Terminate()` : terminate communication with device, close connection. 
+ - `void AddListener(TransportAdapterListener)` : add Listener for Transport adapter events. TransportAdapter should nptify listener about events. 
+ - ` Error SearchDevices()` : Start searching fore devices. List of new devices will be supplied in TransportAdapterListener::onDeviceListUpdated callback.
+ - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific applicaiton on Device.
+ - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific applicaiton on Device.
+ - `DeviceList GetDeviceList()` : Get list of devices, handled by Transport adapter
+ - `ApplicationList GetApplicationList(const DeviceUID& device_handle)` get list of applications, available on certain transport. 
+ - `void TransportConfigUpdated(TransportConfig)` : Applies updated Transport Configuration
+ - `std::string GetConnectionType()` :  Obtain connection type used by device.
+ - `void RunAppOnDevice(DeviceUID, bundle_id)` : Run specific application on device
+ 
 ### Using modern CMake approach
 
 SDL may use modern cmake approach for targets creation. It will simplify porting SDL to any platform : 
