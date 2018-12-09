@@ -81,7 +81,7 @@ Functions that sdl_adapter should provide in LifeCycle component :
  - `main` - function that will be called on application staratup 
  - `StartComponents` - Function initialize all components and startup SDL
  - `StopComponents` - Function stop and delete all SDL components. 
-  
+
 #### HMIMessageSender 
 
 Components that is responcible for sending message to HMI. 
@@ -93,7 +93,6 @@ Components that is responcible for sending message to HMI.
 The components works in async mode. Calling `SendMessageToHMI` actually puts message in the queue for sending to HMI. 
 
 
-
 #### Transport Layer :
 
 Transport layer is the most significant part of **SDL adapter**. 
@@ -101,7 +100,6 @@ For entire transport type should be implemented folowing list of interfaces :
  - TransportAdapter
  - ServerConnectionFactory
  - DeviceScanner
- 
  
 ##### TransportAdapter
 Class is responcible for sending data to device and receiving data. 
@@ -117,7 +115,27 @@ Class is responcible for sending data to device and receiving data.
  - `void TransportConfigUpdated(TransportConfig)` : Applies updated Transport Configuration
  - `std::string GetConnectionType()` :  Obtain connection type used by device.
  - `void RunAppOnDevice(DeviceUID, bundle_id)` : Run specific application on device
+
+##### ServerConnectionFactory 
+
+Implement transport dependent connection that was originated by the user.
+
+ - `Error Init()` : Start server connection factory. 
+ - `Error CreateConnection(DeviceUID, ApplicationHandle) ` : Create transportindependent abstraciotn of connection
  
+##### Device Scanner 
+
+Transport dependent device scanning component
+
+ - `Error Scan()` : Start device scanning
+ - `void Terminate() ` : Stop Device scanning
+
+##### LowVoltageSignalHandler
+
+Component should implement platform specific way of handling low voltage signal and notif business logic about it. 
+
+ - `LowVoltageSignalsHandler(LowVoltageSignalsListener)` : Constructor for signal handler.  
+
 ### Using modern CMake approach
 
 SDL may use modern cmake approach for targets creation. It will simplify porting SDL to any platform : 
