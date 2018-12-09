@@ -7,33 +7,33 @@
 
 ## Introduction
 
-This proposal is about spliting SDL on **business logic** part, and **sdl adapter** part.
+This proposal is about spiting SDL on **business logic** part, and **SDL adapter** part.
 
-**SDL business logic** should contain platfrom agnostic code. All features of SDL implemented in that layer. 
-**SDL adapter** should implement interfaces that SDL business logic will use for communication with user, platfrom, devices. 
+**SDL business logic** should contain platform agnostic code. All features of SDL implemented in that layer. 
+**SDL adapter** should implement interfaces that SDL business logic will use for communication with user, platform, devices. 
 
 ## Motivation
 
 Integration of SDL is complicated process. 
 Integration of each new release of SDL requires big amount of additional resources and efforts.
-Dependency managment in SDL project is compilcated and not obvious. 
+Dependency management in SDL project is complicated and not obvious. 
 
-Each OEM hardware have own approach for comunicaiton with mobile device.
+Each OEM hardware have own approach for communication with mobile device.
 Now entire SDL components should be replaced for porting SDL on specific OEM hardware.
 
-Now for sdl contributors it is not obvious if some components should not contain platform specific code,
+Now for SDL contributors it is not obvious if some components should not contain platform specific code,
 and should not contain business logic to avoid integration issues.
 
-Now for sdl integrators it is not obvious if some components contains business logic or not,
+Now for SDL integrators it is not obvious if some components contains business logic or not,
 and can be safety replaced by OEM implementation.
 
 ## Proposed solution
 
-Extract platform specific parts, and parts that may be replaces for integration of SDL to OEM inrastructure to separate component - **SDL adapter**. 
+Extract platform specific parts, and parts that may be replaces for integration of SDL to OEM infrastructure to separate component - **SDL adapter**. 
 
-### Architecture splitting of sdl parts :
+### Architecture splitting of SDL parts :
 
-Extract folowing components to SDL Adapter :
+Extract flowing components to SDL Adapter :
 
 - Transport Adapters 
 - HMI MessageBrocker
@@ -55,7 +55,7 @@ Big picture of SDL Adapter :
  - Policy functionality
  - State management
 
-Folowing interfaces **SDL business logic** component should provide to SDL adapter : 
+Flowing interfaces **SDL business logic** component should provide to SDL adapter : 
  
 #### HMIMessageObserver
 
@@ -63,8 +63,8 @@ Interface used by **HMI Massage observer** to notify SDL about new HMI message.
 
 ###### Methods : 
 
-- `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Brocker when message from HMI received 
-- `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Brocker if sending message to HMI failed 
+- `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Broker when message from HMI received 
+- `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Broker if sending message to HMI failed 
 
 ### Scope of responsibilities or SDL adapter
 
@@ -72,19 +72,19 @@ Interface used by **HMI Massage observer** to notify SDL about new HMI message.
 
 #### LifeCycle 
 
-Component is responcible for SDL startup, it initialize all components of SDL, and inject dependencies. 
+Component is responsible for SDL startup, it initialize all components of SDL, and inject dependencies. 
 
 Components should contain main.cc with `main` function that will be called when application starts.
 
 Functions that sdl_adapter should provide in LifeCycle component : 
 
- - `main` - function that will be called on application staratup 
+ - `main` - function that will be called on application startup 
  - `StartComponents` - Function initialize all components and startup SDL
  - `StopComponents` - Function stop and delete all SDL components. 
 
 #### HMIMessageSender 
 
-Components that is responcible for sending message to HMI. 
+Components that is responsible for sending message to HMI. 
 
 - `void SendMessageToHMI (SPtr<HMIMessage>)` : Send message to HMI (Put in queue for sending)
 - `size_t GetNumberMessagesInQueue ()` : Return amount of messages that queed for sending to HMI, but not sent yet.
@@ -96,20 +96,20 @@ The components works in async mode. Calling `SendMessageToHMI` actually puts mes
 #### Transport Layer :
 
 Transport layer is the most significant part of **SDL adapter**. 
-For entire transport type should be implemented folowing list of interfaces : 
+For entire transport type should be implemented following list of interfaces : 
  - TransportAdapter
  - ServerConnectionFactory
  - DeviceScanner
  
 ##### TransportAdapter
-Class is responcible for sending data to device and receiving data. 
+Class is responsible for sending data to device and receiving data. 
 
  - `void Init()` : initialize Transport Adapter functionality 
  - `void Terminate()` : terminate communication with device, close connection. 
- - `void AddListener(TransportAdapterListener)` : add Listener for Transport adapter events. TransportAdapter should nptify listener about events. 
+ - `void AddListener(TransportAdapterListener)` : add Listener for Transport adapter events. TransportAdapter should notify listener about events. 
  - ` Error SearchDevices()` : Start searching fore devices. List of new devices will be supplied in TransportAdapterListener::onDeviceListUpdated callback.
- - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific applicaiton on Device.
- - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific applicaiton on Device.
+ - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific application on Device.
+ - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific application on Device.
  - `DeviceList GetDeviceList()` : Get list of devices, handled by Transport adapter
  - `ApplicationList GetApplicationList(const DeviceUID& device_handle)` get list of applications, available on certain transport. 
  - `void TransportConfigUpdated(TransportConfig)` : Applies updated Transport Configuration
@@ -121,7 +121,7 @@ Class is responcible for sending data to device and receiving data.
 Implement transport dependent connection that was originated by the user.
 
  - `Error Init()` : Start server connection factory. 
- - `Error CreateConnection(DeviceUID, ApplicationHandle) ` : Create transportindependent abstraciotn of connection
+ - `Error CreateConnection(DeviceUID, ApplicationHandle) ` : Create transport independent abstraction of connection
  
 ##### Device Scanner 
 
@@ -132,7 +132,7 @@ Transport dependent device scanning component
 
 ##### LowVoltageSignalHandler
 
-Component should implement platform specific way of handling low voltage signal and notif business logic about it. 
+Component should implement platform specific way of handling low voltage signal and notify business logic about it. 
 
  - `LowVoltageSignalsHandler(LowVoltageSignalsListener)` : Constructor for signal handler.  
 
