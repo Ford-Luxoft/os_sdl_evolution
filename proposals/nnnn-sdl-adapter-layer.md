@@ -7,10 +7,10 @@
 
 ## Introduction
 
-This proposal is about splitting SDL into **business logic** part, and **SDL adapter** part.
+This proposal is about splitting SDL into **business logic** part and **SDL adapter** part.
 
-**SDL business logic** should contain platform agnostic code. All features of SDL implemented in that layer.  
-**SDL adapter** should implement interfaces that SDL business logic will use for communication with user, platform, devices. 
+**SDL business logic** should contain platform agnostic code. All features of SDL are implemented in that layer.  
+**SDL adapter** should implement interfaces which SDL business logic will use for communication with user, platform, devices. 
 
 ## Motivation
 
@@ -18,15 +18,15 @@ Integration of SDL is a complicated process.
 Integration of each new release of SDL requires big amount of additional resources and efforts.
 Dependency management in SDL project is complicated and not obvious. 
 
-Each OEM hardware has own approach for communication with mobile devices.
-Now entire SDL components should be replaced for porting SDL on specific OEM hardware.
+Each OEM hardware has its own approach for communication with mobile devices.
+Now entire SDL components should be replaced for porting SDL to specific OEM hardware.
 
-Currently it is not obvious for SDL contributors if some components should not contain platform specific code,
-and should not contain business logic to avoid integration issues. For SDL integrators it is not obvious if some components contain business logic or not, and if they can be safely replaced by OEM implementation.
+Currently it is not obvious for SDL contributors that some components should not contain platform specific code,
+and should not contain business logic to avoid integration issues. For SDL integrators it is not obvious whether some components contain business logic or not, and if they can be safely replaced by OEM implementation.
 
 ## Proposed solution
 
-The proposed solution is to extract platform specific parts, and parts that may be replaces for integration of SDL to OEM infrastructure to a separate component called **SDL adapter**. 
+The proposed solution is to extract platform specific parts and parts that may be replaced for integration of SDL to OEM infrastructure to a separate component called **SDL adapter**. 
 
 ### Architecture splitting of SDL parts:
 
@@ -60,8 +60,8 @@ Interface is used by **HMI Message Handler** to notify SDL about new HMI message
 
 ###### Methods: 
 
-- `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Broker when message from HMI received 
-- `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Broker if sending message to HMI failed 
+- `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Broker when message from HMI was received 
+- `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Broker if sending message to HMI was failed 
 
 ### Scope of responsibilities of SDL adapter
 
@@ -69,11 +69,11 @@ Interface is used by **HMI Message Handler** to notify SDL about new HMI message
 
 #### LifeCycle 
 
-Component is responsible for SDL startup, it initializes all components of SDL, and inject dependencies. 
+Component is responsible for SDL startup, it initializes all components of SDL and injects dependencies. 
 
 Components should contain main.cc with `main` function that will be called when application starts.
 
-Functions that sdl_adapter should provide in LifeCycle component: 
+Functions which sdl_adapter should provide in LifeCycle component: 
 
  - `main` is the function that will be called on application startup 
  - `StartComponents` is the function that initializes all components and startup SDL
@@ -84,27 +84,27 @@ Functions that sdl_adapter should provide in LifeCycle component:
 Components that are responsible for sending message to HMI: 
 
 - `void SendMessageToHMI (SPtr<HMIMessage>)`: Send message to HMI (Put in queue for sending)
-- `size_t GetNumberMessagesInQueue ()`: Return amount of messages that queed for sending to HMI, but not sent yet
+- `size_t GetNumberMessagesInQueue ()`: Return amount of messages that queued for sending to HMI, but not yet sent
 - `void RemoveMessagesByIds (vector<id>)`: Removes certain messages from queue for sending to HMI
 
-The components work in async mode. Calling `SendMessageToHMI` actually puts a message in the queue for sending to HMI. 
+The components work in async mode. Calling `SendMessageToHMI` actually puts a message to the queue for sending to HMI. 
 
 
 #### Transport Layer
 
 Transport layer is the most significant part of **SDL adapter**.  
-For entire transport type should be implemented the following list of interfaces: 
+The following list of interfaces should be implemented for each transport type: 
  - TransportAdapter
  - ServerConnectionFactory
  - DeviceScanner
  
 ##### TransportAdapter
-Class is responsible for sending data to a device and receiving data. 
+Class is responsible for sending/receiving data to/from device. 
 
  - `void Init()` : initialize Transport Adapter functionality 
  - `void Terminate()` : terminate communication with device, close connection. 
  - `void AddListener(TransportAdapterListener)` : add Listener for Transport adapter events. TransportAdapter should notify listener about events. 
- - ` Error SearchDevices()` : Start searching fore devices. List of new devices will be supplied in TransportAdapterListener::onDeviceListUpdated callback.
+ - ` Error SearchDevices()` : Start searching for devices. List of new devices will be supplied in TransportAdapterListener::onDeviceListUpdated callback.
  - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific application on Device.
  - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific application on Device.
  - `DeviceList GetDeviceList()` : Get list of devices, handled by Transport adapter
@@ -135,30 +135,31 @@ Component should implement platform specific way of handling low voltage signal 
 
 ### Using modern CMake approach
 
-SDL may use a modern cmake approach for creating targets. It will simplify porting SDL to any platform. 
+SDL may use a modern cmake approach for targets creation. It will simplify porting SDL to any platform. 
 
-#### Use CMake name spaces 
+#### Use CMake namespaces 
 
-Propose to use cmake with name spaces for all SDL components and dependencies.  
+Propose to use cmake with namespaces for all SDL components and dependencies.  
 This best practice of cmake allows:
  - To make clear components dependencies;
  - To avoid dependency gaps (required for multi-threading compilation);
  - To keep components independent;
- - To understand components interface;
+ - To understand components interfaces;
  - To unify external dependencies management.
  
 Here are the drawbacks of the current structure of cmake usage:
 1. Existing cmake structure does not allow easy and seamless integration to other operating systems.
 2. Existing cmake structure has no unified management system of 3rd party libraries.
 3. With existing cmake structure we have problems with components and libraries dependencies, and the modern approach should resolve it.
-4. This new approach will make cmake files more clear and lightweight.
+
+This new approach will make cmake files more clear and lightweight.
 
 
 #### target_<link_libraries,include_directiries>
 
 SDL CMake files should avoid using global cmake commands for adding compiler flags, include directories, linkage libraries, etc ...
 
-This functions pollute the project compilation structure, adds hidden dependencies between components, and make cmake files unclear and confusing.
+Theses functions pollute the project compilation structure, add hidden dependencies between components, and make cmake files unclear and confusing.
 
 SDL CMake files should explicitly specify include directories, link libraries, compiler options for entire target that it compiles.
 
