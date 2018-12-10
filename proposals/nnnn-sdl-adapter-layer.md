@@ -7,7 +7,7 @@
 
 ## Introduction
 
-This proposal is about splitting SDL on **business logic** part, and **SDL adapter** part.
+This proposal is about splitting SDL into **business logic** part, and **SDL adapter** part.
 
 **SDL business logic** should contain platform agnostic code. All features of SDL implemented in that layer.  
 **SDL adapter** should implement interfaces that SDL business logic will use for communication with user, platform, devices. 
@@ -56,7 +56,7 @@ Big picture of SDL Adapter
  
 #### HMIMessageObserver
 
-Interface used by **HMI Massage observer** to notify SDL about new HMI message. 
+Interface is used by **HMI Message Handler** to notify SDL about new HMI messages. 
 
 ###### Methods: 
 
@@ -90,7 +90,7 @@ Components that are responsible for sending message to HMI:
 The components work in async mode. Calling `SendMessageToHMI` actually puts a message in the queue for sending to HMI. 
 
 
-#### Transport Layer:
+#### Transport Layer
 
 Transport layer is the most significant part of **SDL adapter**.  
 For entire transport type should be implemented the following list of interfaces: 
@@ -192,7 +192,7 @@ If required version of certain dependency is available on the system, build syst
 If required version of certain dependency is missed on the system, its build system should compile it and keep in `<build>` folder within `make` command.
 
 
-**External dependencies** - dependencies that build system should download from official sources during cmake run.
+**External dependencies** - dependencies that build system should download from official sources during cmake run.  
 **3rd party dependencies** - dependencies that build system should keep as sources in `src/3rd_party` directory.
 
 SDL is responsible for 3rd party dependencies in the code and fixes that may also be applied to this code.
