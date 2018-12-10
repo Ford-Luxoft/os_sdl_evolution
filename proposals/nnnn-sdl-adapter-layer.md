@@ -7,44 +7,41 @@
 
 ## Introduction
 
-This proposal is about spiting SDL on **business logic** part, and **SDL adapter** part.
+This proposal is about splitting SDL on **business logic** part, and **SDL adapter** part.
 
-**SDL business logic** should contain platform agnostic code. All features of SDL implemented in that layer. 
+**SDL business logic** should contain platform agnostic code. All features of SDL implemented in that layer.  
 **SDL adapter** should implement interfaces that SDL business logic will use for communication with user, platform, devices. 
 
 ## Motivation
 
-Integration of SDL is complicated process. 
+Integration of SDL is a complicated process. 
 Integration of each new release of SDL requires big amount of additional resources and efforts.
 Dependency management in SDL project is complicated and not obvious. 
 
-Each OEM hardware have own approach for communication with mobile device.
+Each OEM hardware has own approach for communication with mobile devices.
 Now entire SDL components should be replaced for porting SDL on specific OEM hardware.
 
-Now for SDL contributors it is not obvious if some components should not contain platform specific code,
-and should not contain business logic to avoid integration issues.
-
-Now for SDL integrators it is not obvious if some components contains business logic or not,
-and can be safety replaced by OEM implementation.
+Currently it is not obvious for SDL contributors if some components should not contain platform specific code,
+and should not contain business logic to avoid integration issues. For SDL integrators it is not obvious if some components contain business logic or not, and if they can be safely replaced by OEM implementation.
 
 ## Proposed solution
 
-Extract platform specific parts, and parts that may be replaces for integration of SDL to OEM infrastructure to separate component - **SDL adapter**. 
+The proposed solution is to extract platform specific parts, and parts that may be replaces for integration of SDL to OEM infrastructure to a separate component called **SDL adapter**. 
 
-### Architecture splitting of SDL parts :
+### Architecture splitting of SDL parts:
 
-Extract flowing components to SDL Adapter :
+Extract the following components to SDL Adapter:
 
 - Transport Adapters 
 - HMI MessageBrocker
 - SDL initialization
 
-Big picture of SDL Adapter : 
+Big picture of SDL Adapter 
 
 ![SDL Adapter](../assets/proposals/nnnn-sdl-adapter-layer/sdl_adapter.png) 
 
 
-### Scope or responsibilities and interfaces of SDL business logic
+### Scope of responsibilities and interfaces of SDL business logic component
 
 **SDL business logic** component contains whole functionality of SDL :  
 
@@ -55,54 +52,54 @@ Big picture of SDL Adapter :
  - Policy functionality
  - State management
 
-Flowing interfaces **SDL business logic** component should provide to SDL adapter : 
+**SDL business logic** component should provide SDL adapter with the following interfaces: 
  
 #### HMIMessageObserver
 
 Interface used by **HMI Massage observer** to notify SDL about new HMI message. 
 
-###### Methods : 
+###### Methods: 
 
 - `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Broker when message from HMI received 
 - `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Broker if sending message to HMI failed 
 
-### Scope of responsibilities or SDL adapter
+### Scope of responsibilities of SDL adapter
 
 ### Open source SDL adapter
 
 #### LifeCycle 
 
-Component is responsible for SDL startup, it initialize all components of SDL, and inject dependencies. 
+Component is responsible for SDL startup, it initializes all components of SDL, and inject dependencies. 
 
 Components should contain main.cc with `main` function that will be called when application starts.
 
-Functions that sdl_adapter should provide in LifeCycle component : 
+Functions that sdl_adapter should provide in LifeCycle component: 
 
- - `main` - function that will be called on application startup 
- - `StartComponents` - Function initialize all components and startup SDL
- - `StopComponents` - Function stop and delete all SDL components. 
+ - `main` is the function that will be called on application startup 
+ - `StartComponents` is the function that initializes all components and startup SDL
+ - `StopComponents`  is the function that stops and deletes all SDL components 
 
 #### HMIMessageSender 
 
-Components that is responsible for sending message to HMI. 
+Components that are responsible for sending message to HMI: 
 
-- `void SendMessageToHMI (SPtr<HMIMessage>)` : Send message to HMI (Put in queue for sending)
-- `size_t GetNumberMessagesInQueue ()` : Return amount of messages that queed for sending to HMI, but not sent yet.
-- `void RemoveMessagesByIds (vector<id>)` : Removes certain messages from queue for sending to HMI
+- `void SendMessageToHMI (SPtr<HMIMessage>)`: Send message to HMI (Put in queue for sending)
+- `size_t GetNumberMessagesInQueue ()`: Return amount of messages that queed for sending to HMI, but not sent yet
+- `void RemoveMessagesByIds (vector<id>)`: Removes certain messages from queue for sending to HMI
 
-The components works in async mode. Calling `SendMessageToHMI` actually puts message in the queue for sending to HMI. 
+The components work in async mode. Calling `SendMessageToHMI` actually puts a message in the queue for sending to HMI. 
 
 
-#### Transport Layer :
+#### Transport Layer:
 
-Transport layer is the most significant part of **SDL adapter**. 
-For entire transport type should be implemented following list of interfaces : 
+Transport layer is the most significant part of **SDL adapter**.  
+For entire transport type should be implemented the following list of interfaces: 
  - TransportAdapter
  - ServerConnectionFactory
  - DeviceScanner
  
 ##### TransportAdapter
-Class is responsible for sending data to device and receiving data. 
+Class is responsible for sending data to a device and receiving data. 
 
  - `void Init()` : initialize Transport Adapter functionality 
  - `void Terminate()` : terminate communication with device, close connection. 
@@ -132,18 +129,18 @@ Transport dependent device scanning component
 
 ##### LowVoltageSignalHandler
 
-Component should implement platform specific way of handling low voltage signal and notify business logic about it. 
+Component should implement platform specific way of handling low voltage signal and notifying business logic about it. 
 
  - `LowVoltageSignalsHandler(LowVoltageSignalsListener)` : Constructor for signal handler.  
 
 ### Using modern CMake approach
 
-SDL may use modern cmake approach for targets creation. It will simplify porting SDL to any platform : 
+SDL may use a modern cmake approach for creating targets. It will simplify porting SDL to any platform. 
 
 #### Use CMake name spaces 
 
-Propose to use cmake with name spaces for all SDL components and dependencies. 
-This best practice of cmake allow:
+Propose to use cmake with name spaces for all SDL components and dependencies.  
+This best practice of cmake allows:
  - To make clear components dependencies;
  - To avoid dependency gaps (required for multi-threading compilation);
  - To keep components independent;
@@ -165,7 +162,7 @@ This functions pollute the project compilation structure, adds hidden dependenci
 
 SDL CMake files should explicitly specify include directories, link libraries, compiler options for entire target that it compiles.
 
-#### New Cmake approach detailed design 
+#### New Cmake approach. Detailed design 
 
 ##### SDL core repository structure:
 
@@ -192,7 +189,7 @@ By default build system should not install to the system any additional librarie
 
 If required version of certain dependency is available on the system, build system should use it.
 
-If required version of certain dependency missed on the system, it build system should compile it and keep in `<build>` folder within `make` command.
+If required version of certain dependency is missed on the system, its build system should compile it and keep in `<build>` folder within `make` command.
 
 
 **External dependencies** - dependencies that build system should download from official sources during cmake run.
@@ -200,7 +197,7 @@ If required version of certain dependency missed on the system, it build system 
 
 SDL is responsible for 3rd party dependencies in the code and fixes that may also be applied to this code.
 
-The list of SDL dependencies : 
+The list of SDL dependencies: 
   - boost : **external dependency**, if it was not found on the system, build system should download sources from official sources during `cmake` command run and compile within project during `make` command run.
   - libapr : **3rd party dependency**, if it was not found on the system, build system should take sources from `src/3rd_party/` and compile within project during `make` command run.
   - libaprutils : **3rd party dependency**, if it was not found on the system, build system should take sources from `src/3rd_party/` and compile within project during `make` command run.
@@ -212,7 +209,7 @@ The list of SDL dependencies :
 
 Compilation of libraries should not trigger their installation to the system by default.
 
-Propose to use special CMAKE variable if user desires to install 3rd party libraries to the system: `THIRD_PARTY_INSTALL_PREFIX`.
+It is proposed to use special CMAKE variable if user desires to install 3rd party libraries to the system: `THIRD_PARTY_INSTALL_PREFIX`.
 
 If this variable is empty, SDL should install 3rd party and external dependencies libraries to `{BUILD_DIR}`/compile_dependencies
 
