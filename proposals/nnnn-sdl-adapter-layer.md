@@ -159,7 +159,7 @@ This new approach will make cmake files more clear and lightweight.
 
 SDL CMake files should avoid using global cmake commands for adding compiler flags, include directories, linkage libraries, etc ...
 
-Theses functions pollute the project compilation structure, add hidden dependencies between components, and make cmake files unclear and confusing.
+These functions pollute the project compilation structure, add hidden dependencies between components, and make cmake files unclear and confusing.
 
 SDL CMake files should explicitly specify include directories, link libraries, compiler options for entire target that it compiles.
 
