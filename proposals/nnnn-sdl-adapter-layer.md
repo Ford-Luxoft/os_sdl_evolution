@@ -47,7 +47,7 @@ Big picture of SDL Adapter
 
  - SDL protocol
  - Application management
- - Handling and processing RPCs
+ - Handling and processing of RPCs
  - Resumption functionality
  - Policy functionality
  - State management
@@ -60,14 +60,15 @@ Interface is used by **HMI Message Handler** to notify SDL about new HMI message
 
 ###### Methods: 
 
-- `void OnMessageReceived (SPtr<HMIMessage>)` : Called by HMI Message Broker when message from HMI was received 
-- `void OnErrorSending (SPtr<HMIMessage>)` :  Called by HMI Message Broker if sending message to HMI was failed 
+- `void OnMessageReceived(SPtr<HMIMessage>)` : Called by HMI Message Broker when message from HMI was received 
+- `void OnErrorSending(SPtr<HMIMessage>)` :  Called by HMI Message Broker if sending message to HMI was failed 
+- `void OnMessageSent(SPtr<HMIMessage>)` : Called by HMI Message Broker when message to HMI was sent
 
 ### Scope of responsibilities of SDL adapter
 
-### Open source SDL adapter
+#### Open source SDL adapter
 
-#### LifeCycle 
+##### LifeCycle 
 
 Component is responsible for SDL startup, it initializes all components of SDL and injects dependencies. 
 
@@ -76,21 +77,21 @@ Components should contain main.cc with `main` function that will be called when 
 Functions which sdl_adapter should provide in LifeCycle component: 
 
  - `main` is the function that will be called on application startup 
- - `StartComponents` is the function that initializes all components and startup SDL
- - `StopComponents`  is the function that stops and deletes all SDL components 
+ - `StartComponents()` is the function that initializes all components and startup SDL
+ - `StopComponents()`  is the function that stops and deletes all SDL components 
 
-#### HMIMessageSender 
+##### HMIMessageSender 
 
 Components that are responsible for sending message to HMI: 
 
-- `void SendMessageToHMI (SPtr<HMIMessage>)`: Send message to HMI (Put in queue for sending)
-- `size_t GetNumberMessagesInQueue ()`: Return amount of messages that queued for sending to HMI, but not yet sent
-- `void RemoveMessagesByIds (vector<id>)`: Removes certain messages from queue for sending to HMI
+- `void SendMessageToHMI(SPtr<HMIMessage>)`: Send message to HMI (Put in queue for sending)
+- `size_t GetNumberMessagesInQueue()`: Return amount of messages that queued for sending to HMI, but not yet sent
+- `void RemoveMessagesByIds(vector<id>)`: Removes certain messages from queue for sending to HMI
 
-The components work in async mode. Calling `SendMessageToHMI` actually puts a message to the queue for sending to HMI. 
+The components is working in async mode. Calling `SendMessageToHMI` actually puts a message to the queue for sending to HMI. 
 
 
-#### Transport Layer
+##### Transport Layer
 
 Transport layer is the most significant part of **SDL adapter**.  
 The following list of interfaces should be implemented for each transport type: 
@@ -106,11 +107,10 @@ Class is responsible for sending/receiving data to/from device.
  - `void AddListener(TransportAdapterListener)` : add Listener for Transport adapter events. TransportAdapter should notify listener about events. 
  - ` Error SearchDevices()` : Start searching for devices. List of new devices will be supplied in TransportAdapterListener::onDeviceListUpdated callback.
  - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific application on Device.
- - `Error SendData(DeviceUID, ApplicationHandle, data)` : Send data to specific application on Device.
  - `DeviceList GetDeviceList()` : Get list of devices, handled by Transport adapter
- - `ApplicationList GetApplicationList(const DeviceUID& device_handle)` get list of applications, available on certain transport. 
+ - `ApplicationList GetApplicationList(const DeviceUID& device_handle)` Get list of applications, available on certain transport. 
  - `void TransportConfigUpdated(TransportConfig)` : Applies updated Transport Configuration
- - `std::string GetConnectionType()` :  Obtain connection type used by device.
+ - `std::string GetConnectionType()` :  Get connection type used by device.
  - `void RunAppOnDevice(DeviceUID, bundle_id)` : Run specific application on device
 
 ##### ServerConnectionFactory 
@@ -118,26 +118,26 @@ Class is responsible for sending/receiving data to/from device.
 Implement transport dependent connection that was originated by the user.
 
  - `Error Init()` : Start server connection factory. 
- - `Error CreateConnection(DeviceUID, ApplicationHandle) ` : Create transport independent abstraction of connection
+ - `ConnectionSPtr CreateConnection(DeviceUID, ApplicationHandle)` : Create transport independent abstraction of connection
  
 ##### Device Scanner 
 
 Transport dependent device scanning component
 
- - `Error Scan()` : Start device scanning
- - `void Terminate() ` : Stop Device scanning
+ - `Error StartScan()` : Start device scanning
+ - `void StopScan() ` : Stop Device scanning
 
 ##### LowVoltageSignalHandler
 
 Component should implement platform specific way of handling low voltage signal and notifying business logic about it. 
 
- - `LowVoltageSignalsHandler(LowVoltageSignalsListener)` : Constructor for signal handler.  
+ - `LowVoltageSignalHandler(LowVoltageSignalListener)` : Constructor for signal handler.  
 
-### Using modern CMake approach
+#### Using modern CMake approach
 
-SDL may use a modern cmake approach for targets creation. It will simplify porting SDL to any platform. 
+SDL may use a modern cmake approach for targets creation. It will simplify porting of SDL to any platform. 
 
-#### Use CMake namespaces 
+##### Use CMake namespaces 
 
 Propose to use cmake with namespaces for all SDL components and dependencies.  
 This best practice of cmake allows:
@@ -155,7 +155,7 @@ Here are the drawbacks of the current structure of cmake usage:
 This new approach will make cmake files more clear and lightweight.
 
 
-#### target_<link_libraries,include_directiries>
+##### target_<link_libraries,include_directiries>
 
 SDL CMake files should avoid using global cmake commands for adding compiler flags, include directories, linkage libraries, etc ...
 
@@ -163,7 +163,7 @@ These functions pollute the project compilation structure, add hidden dependenci
 
 SDL CMake files should explicitly specify include directories, link libraries, compiler options for entire target that it compiles.
 
-#### New Cmake approach. Detailed design 
+##### New Cmake approach. Detailed design 
 
 ##### SDL core repository structure:
 
@@ -182,7 +182,7 @@ SDL CMake files should explicitly specify include directories, link libraries, c
  - `/cmake/helpers`: contains cmake helpers with common code across components;
  - `/cmake/dependencies`: contains cmake file for finding certain dependency on the system.
 
-Each folder should contain a README file with descriptions of contents and examples of usage if applicable.
+Each folder should contain a README file with description of contents and examples of usage if applicable.
 
 ##### 3rd party libraries management:
 
@@ -206,7 +206,7 @@ The list of SDL dependencies:
   - bson-clib : **external dependency**, if it was not found on the system, build system should download sources from official sources during `cmake` command run and compile within project during `make` command run.
   - json : **3rd party dependency**, if it was not found on the system, build system should take sources from `src/3rd_party/` and compile within project during `make` command run.
 
-######  3rd party libraries installation rules
+#####  3rd party libraries installation rules
 
 Compilation of libraries should not trigger their installation to the system by default.
 
@@ -219,6 +219,13 @@ During `make install` SDL should copy all files required for SDL RUN to `{BUILD_
 
 ## Potential downsides
 
+Such global SDL code refactoring has a big regression area so after current proposal implementation deep full testing should be done.
+All SDL contributors must follow the same approach regarding cmake files and regarding new design approach.
+
 ## Impact on existing code
 
+No MOBILE/HMI API changes expected. However, due to code refacroring in most components, there is an impact on all existing SDL components.
+
 ## Alternatives considered
+
+Continue using of existing SDL structure, however it makes SDL integration for each new platfrom a quite complicated and long process.
