@@ -76,7 +76,12 @@ Open source implementation of Remote Adapter Server will support appropriate tra
  - TCP for mobile connections (additional transports for automated testing provided in separate proposal)
  - Web socket for HMI connection. 
 
-Remote Adapter Server is a components with listed transport agnostic interfaces, so for OEM it can be implemented for another transports, or API of Remote Adapter Server can be extended in case if OEM implementation of SDL requires any additional functionality.
+Remote Client written in C++, it should be maintained in sdl_atf repository as part of ATF.
+
+Remote Adapter Server is a components with listed transport agnostic interfaces.
+Remote Client should be reimplemened for OEM in case if OEM use another HMI/mobile communication transport, or have additional transports for communication with SDL.
+
+
 
 ## Potential downsides
 
