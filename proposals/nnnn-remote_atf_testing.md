@@ -78,7 +78,7 @@ Open source implementation of Remote Adapter Server will support appropriate tra
 
 Remote Client written in C++, it should be maintained in sdl_atf repository as part of ATF.
 
-Remote Adapter Server is a components with listed transport agnostic interfaces.
+Remote Adapter Server is a set of the components with listed transport agnostic interfaces.
 Remote Client should be reimplemened for OEM in case if OEM use another HMI/mobile communication transport, or have additional transports for communication with SDL.
 
 
