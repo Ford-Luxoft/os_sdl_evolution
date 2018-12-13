@@ -72,16 +72,14 @@ Remote connection as a simulation of Mobile side may be done in scope of the fol
 
 ### Open source implementation of Remote Adapter
 
-Open source implementation of Remote Adapter Server will support appropriate transports to test open source SDL :
- - TCP for mobile connections (additional transports for automated testing provided in separate proposal)
- - Web socket for HMI connection. 
+Open source implementation of Remote Adapter Server will support appropriate transports to test open source SDL:
+ - TCP for mobile connections (additional transports for automated testing are provided in a separate proposal)
+ - Web socket for HMI connection 
 
 Remote Client written in C++, it should be maintained in sdl_atf repository as part of ATF.
 
-Remote Adapter Server is a set of the components with listed transport agnostic interfaces.
-Remote Client should be reimplemened for OEM in case if OEM use another HMI/mobile communication transport, or have additional transports for communication with SDL.
-
-
+Remote Adapter Server is a set of the components with listed transport agnostic interfaces.  
+Remote Client should be reimplemented for OEM in case OEM uses different HMI/mobile communication transport, or has additional transports for communication with SDL.
 
 ## Potential downsides
 
