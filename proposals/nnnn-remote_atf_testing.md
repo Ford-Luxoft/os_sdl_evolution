@@ -39,7 +39,7 @@ The following RPCs are required:
  - receive (connection) -> data. 
  - Close Connection(connection) -> status.
 
-### RPCs for SDL life cycle management:
+#### RPCs for SDL life cycle management:
 Testing of some SDL functionality (i.e. Resumption flow) requires performing of ignition cycles. For the SDL ignition cycle, that means it will be stopped and started again (with additional notifications before stop). So ATF will need to control the SDL life cycle.
 This can only be done with a Remote ATF Adapter on a remote workstation. 
 
@@ -48,7 +48,7 @@ The following RPCs are required:
  - Stop SDL.
  - CheckSDL state.
  
-### File management:
+#### File management:
 Some automated use cases are required as special preconditions for the modifications in smartDeviceLink.ini file, capabilities, preloaded policy table, etc ...  
 Because of this Remote ATF Adapter, it should provide functionality for file and folder management, such as: 
  - Upload file.
@@ -60,7 +60,7 @@ Because of this Remote ATF Adapter, it should provide functionality for file and
  - Delete a directory.
  - Check if directory exist. 
 
-# Low level OS management: 
+#### Low level OS management: 
  - Command execute.
  
 For communication with SDL, the OEM adapter will need to implement this API. 
@@ -69,6 +69,14 @@ In case OEM requires additional functionality, relay server API may be extended.
 ATF should use this API for sending/receiving data as a simulation of the HMI side.
 
 Remote connection as a simulation of Mobile side may be done in scope of the following proposal : [ATF support of additional transports (BT and USB)](https://github.com/smartdevicelink/sdl_evolution/blob/master/proposals/0126-atf-additional-transports.md). Or by using of Wi-Fi (TCP) transport, in this case there is no additional implementation required. 
+
+### Open source implementation of Remote Adapter
+
+Open source implementation of Remote Adapter Server will support appropriate transports to test open source SDL :
+ - TCP for mobile connections (additional transports for automated testing provided in separate proposal)
+ - Web socket for HMI connection. 
+
+Remote Adapter Server is a components with listed transport agnostic interfaces, so for OEM it can be implemented for another transports, or API of Remote Adapter Server can be extended in case if OEM implementation of SDL requires any additional functionality.
 
 ## Potential downsides
 
